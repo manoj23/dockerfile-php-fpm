@@ -20,6 +20,5 @@ COPY --from=builder /sbin/php-fpm7 /sbin/
 COPY --from=builder /etc/shadow /etc/shadow
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/passwd /etc/passwd
-COPY php-fpm.conf /etc/php-fpm.conf
 ENTRYPOINT [ "/sbin/php-fpm7", "-FO" ]
 
