@@ -1,5 +1,4 @@
 FROM alpine:3.7 as builder
-LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make re2c \
@@ -16,6 +15,7 @@ RUN (cd /php-src \
 	&& make install-fpm \
 	&& strip --strip-all /sbin/php-fpm7)
 FROM scratch
+LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /sbin/php-fpm7 /sbin/
 COPY --from=builder /etc/shadow /etc/shadow
 COPY --from=builder /etc/group /etc/group
