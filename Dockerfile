@@ -1,4 +1,4 @@
-FROM alpine:3.7 as builder
+FROM alpine:3.8 as builder
 ARG PHP_CONF=${PHP_CONF:-}
 ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
 
