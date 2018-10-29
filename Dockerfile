@@ -1,4 +1,5 @@
 FROM alpine:3.7 as builder
+ARG PHP_CONF=${PHP_CONF:-}
 
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make re2c \
@@ -10,7 +11,7 @@ RUN (cd /php-src \
 	&& ./buildconf && autoreconf \
 	&& ./configure --build=$GNU_BUILD --host=$GNU_HOST --prefix= \
 		--program-suffix=7 --disable-all --disable-cli --disable-cgi \
-		--enable-fpm \
+		--enable-fpm ${PHP_CONF} \
 	&& make fpm -j "$(nproc)" \
 	&& make install-fpm \
 	&& strip --strip-all /sbin/php-fpm7)
