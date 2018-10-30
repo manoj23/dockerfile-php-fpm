@@ -1,11 +1,10 @@
 FROM alpine:3.8 as builder
-ARG PHP_CONF=${PHP_CONF:-}
 ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
-
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make re2c \
 	${PHP_BUILD_DEP}
 RUN git clone https://github.com/php/php-src.git
+ARG PHP_CONF=${PHP_CONF:-}
 RUN (cd /php-src \
 	&& GNU_BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& GNU_HOST="$(dpkg-architecture --query DEB_HOST_GNU_TYPE)" \
