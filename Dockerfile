@@ -1,4 +1,4 @@
-FROM alpine:3.8 as builder
+FROM alpine:3.9 as builder
 ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make re2c \
