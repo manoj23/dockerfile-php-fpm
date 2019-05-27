@@ -9,11 +9,12 @@ ARG PHP_CONF=${PHP_CONF:-}
 RUN (cd /php-src \
 	&& GNU_BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& GNU_HOST="$(dpkg-architecture --query DEB_HOST_GNU_TYPE)" \
+	&& CONFIGURE_ARGS="--build=$GNU_BUILD --host=$GNU_HOST --prefix= --program-suffix=7" \
 	&& ./buildconf --force && autoreconf \
-	&& ./configure --build=$GNU_BUILD --host=$GNU_HOST --prefix= \
-		--program-suffix=7 --disable-all --disable-cli --disable-cgi \
-		--enable-fpm ${PHP_CONF})
-RUN (cd /php-src && make fpm -j "$(nproc)" \
+	&& ./configure $CONFIGURE_ARGS \
+		--disable-all --disable-cli --disable-cgi --enable-fpm \
+		${PHP_CONF} \
+	&& make fpm -j "$(nproc)" \
 	&& make install-fpm \
 	&& strip --strip-all /sbin/php-fpm7)
 FROM scratch
