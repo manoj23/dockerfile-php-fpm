@@ -7,6 +7,8 @@ RUN apk update && apk --no-cache add --virtual build-dependencies \
 ARG PHP_GIT_REF=${PHP_GIT_REF:-master}
 RUN git clone https://github.com/php/php-src.git -b ${PHP_GIT_REF}
 ARG PHP_CONF=${PHP_CONF:-}
+# FIXME: install gnu-libiconv when available from an Alpine release
+RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv-dev
 ARG PHP_EXT=${PHP_EXT:-}
 RUN (cd /php-src \
 	&& GNU_BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
@@ -29,6 +31,8 @@ RUN (cd /php-src \
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
+# FIXME: libiconv copy
+COPY --from=builder /usr/lib/preloadable_libiconv.so /usr/lib/
 COPY --from=builder /usr/lib/libxml2.so /usr/lib/
 COPY --from=builder /usr/lib/libxml2.so.2 /usr/lib/
 COPY --from=builder /usr/lib/libxml2.so.2.9.9 /usr/lib/
@@ -41,5 +45,6 @@ COPY --from=builder /sbin/php-fpm7 /sbin/
 COPY --from=builder /etc/shadow /etc/shadow
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/passwd /etc/passwd
+ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 ENTRYPOINT [ "/sbin/php-fpm7", "-FO" ]
 
