@@ -45,6 +45,8 @@ COPY --from=builder /sbin/php-fpm7 /sbin/
 COPY --from=builder /etc/shadow /etc/shadow
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/passwd /etc/passwd
+COPY --from=builder /bin/ /bin/
+RUN mkdir /tmp/ && chmod -R 777 /tmp/ && rm -rf /bin/
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 ENTRYPOINT [ "/sbin/php-fpm7", "-FO" ]
 
