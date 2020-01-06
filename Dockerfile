@@ -28,17 +28,16 @@ RUN (cd /php-src \
 	&& make fpm -j "$(nproc)" \
 	&& make install-fpm \
 	&& strip --strip-all /sbin/php-fpm7)
+ARG USR_LIB=${USR_LIB:-}
+ARG LIB=${LIB:-}
+RUN (mkdir -p /sysroot/usr/lib/ /sysroot/lib/ \
+	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
+	&& for libs in $LIB; do cp -v /lib/*lib${libs}*.so* /sysroot/lib/; done)
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
-# FIXME: libiconv copy
-COPY --from=builder /usr/lib/preloadable_libiconv.so /usr/lib/
-COPY --from=builder /usr/lib/libxml2.so /usr/lib/
-COPY --from=builder /usr/lib/libxml2.so.2 /usr/lib/
-COPY --from=builder /usr/lib/libxml2.so.2.9.9 /usr/lib/
-COPY --from=builder /lib/libz.so /lib/
-COPY --from=builder /lib/libz.so.1 /lib/
-COPY --from=builder /lib/libz.so.1.2.11 /lib/
+COPY --from=builder /sysroot/usr/lib/ /usr/lib/
+COPY --from=builder /sysroot/lib/ /lib/
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=builder /lib/libc.musl-x86_64.so.1 /lib/
 COPY --from=builder /sbin/php-fpm7 /sbin/
