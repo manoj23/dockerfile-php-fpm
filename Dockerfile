@@ -1,9 +1,11 @@
 FROM alpine:3.9 as builder
 ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
+ARG PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP:-}
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make \
 	re2c php7-dev \
-	${PHP_BUILD_DEP}
+	${PHP_BUILD_DEP} \
+	${PHP_RUNTIME_DEP}
 ARG PHP_GIT_REF=${PHP_GIT_REF:-master}
 RUN git clone --depth 1 https://github.com/php/php-src.git -b ${PHP_GIT_REF}
 ARG PHP_CONF=${PHP_CONF:-}
@@ -33,6 +35,10 @@ ARG LIB=${LIB:-}
 RUN (mkdir -p /sysroot/usr/lib/ /sysroot/lib/ \
 	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
 	&& for libs in $LIB; do cp -v /lib/*lib${libs}*.so* /sysroot/lib/; done)
+RUN (for php_runtime_dep in $PHP_RUNTIME_DEP; do \
+	for file in $(apk info -L $php_runtime_dep); do \
+		FOLDER=/sysroot/$(dirname $file); mkdir -p $FOLDER; cp $file $FOLDER; \
+	done; done 2> /dev/null)
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
