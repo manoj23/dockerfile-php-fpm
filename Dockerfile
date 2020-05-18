@@ -36,6 +36,7 @@ RUN (mkdir -p /sysroot/usr/lib/ /sysroot/lib/ \
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
+COPY --from=builder /usr/bin/env /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
 COPY --from=builder /sysroot/lib/ /lib/
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
