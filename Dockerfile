@@ -30,10 +30,14 @@ RUN (cd /php-src \
 	&& make fpm -j "$(nproc)" \
 	&& make install-fpm \
 	&& strip --strip-all /sbin/php-fpm7)
+ARG USR_BIN=${USR_BIN:-}
 ARG USR_LIB=${USR_LIB:-}
+ARG BIN=${BIN:-}
 ARG LIB=${LIB:-}
-RUN (mkdir -p /sysroot/usr/lib/ /sysroot/lib/ \
+RUN (mkdir -p /sysroot/usr/bin/ /sysroot/bin/ /sysroot/usr/lib/ /sysroot/lib/ \
+	&& for bins in $USR_BIN; do cp -v /usr/bin/${bins} /sysroot/usr/bin/; done \
 	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
+	&& for bins in $BIN; do cp -v /bin/${bins} /sysroot/bin/; done \
 	&& for libs in $LIB; do cp -v /lib/*lib${libs}*.so* /sysroot/lib/; done)
 RUN (for php_runtime_dep in $PHP_RUNTIME_DEP; do \
 	for file in $(apk info -L $php_runtime_dep); do \
@@ -42,7 +46,6 @@ RUN (for php_runtime_dep in $PHP_RUNTIME_DEP; do \
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
-COPY --from=builder /usr/bin/env /usr/bin/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
 COPY --from=builder /sysroot/lib/ /lib/
@@ -54,6 +57,7 @@ COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /bin/ /bin/
 RUN mkdir /tmp/ && chmod -R 777 /tmp/ && rm -rf /bin/
+COPY --from=builder /sysroot/bin/ /bin/
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
 ENTRYPOINT [ "/sbin/php-fpm7", "-FO" ]
 
