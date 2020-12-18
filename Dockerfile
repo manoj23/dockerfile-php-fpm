@@ -46,6 +46,24 @@ RUN (for php_runtime_dep in $PHP_RUNTIME_DEP; do \
 	done; done 2> /dev/null)
 FROM scratch
 LABEL maintainer "Georges Savoundararadj <savoundg@gmail.com>"
+ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
+ARG PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP:-}
+ARG PHP_GIT_REF=${PHP_GIT_REF:-master}
+ARG PHP_CONF=${PHP_CONF:-}
+ARG PHP_EXT=${PHP_EXT:-}
+ARG USR_BIN=${USR_BIN:-}
+ARG USR_LIB=${USR_LIB:-}
+ARG BIN=${BIN:-}
+ARG LIB=${LIB:-}
+LABEL PHP_BUILD_DEP=${PHP_BUILD_DEP}
+LABEL PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP}
+LABEL PHP_GIT_REF=${PHP_GIT_REF}
+LABEL PHP_CONF=${PHP_CONF}
+LABEL PHP_EXT=${PHP_EXT}
+LABEL USR_BIN=${USR_BIN}
+LABEL USR_LIB=${USR_LIB}
+LABEL BIN=${BIN}
+LABEL LIB=${LIB}
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
