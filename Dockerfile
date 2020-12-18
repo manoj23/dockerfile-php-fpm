@@ -34,6 +34,7 @@ ARG USR_BIN=${USR_BIN:-}
 ARG USR_LIB=${USR_LIB:-}
 ARG BIN=${BIN:-}
 ARG LIB=${LIB:-}
+ARG DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
 RUN (touch /usr/lib/php7/modules/dummy.so)
 RUN (mkdir -p /sysroot/usr/bin/ /sysroot/bin/ /sysroot/usr/lib/ /sysroot/lib/ \
 	&& for bins in $USR_BIN; do cp -v /usr/bin/${bins} /sysroot/usr/bin/; done \
@@ -55,6 +56,7 @@ ARG USR_BIN=${USR_BIN:-}
 ARG USR_LIB=${USR_LIB:-}
 ARG BIN=${BIN:-}
 ARG LIB=${LIB:-}
+ARG DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
 LABEL PHP_BUILD_DEP=${PHP_BUILD_DEP}
 LABEL PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP}
 LABEL PHP_GIT_REF=${PHP_GIT_REF}
@@ -64,6 +66,7 @@ LABEL USR_BIN=${USR_BIN}
 LABEL USR_LIB=${USR_LIB}
 LABEL BIN=${BIN}
 LABEL LIB=${LIB}
+LABEL DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
