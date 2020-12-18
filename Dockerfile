@@ -67,6 +67,7 @@ LABEL USR_LIB=${USR_LIB}
 LABEL BIN=${BIN}
 LABEL LIB=${LIB}
 LABEL DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
+LABEL org.opencontainers.image.source https://github.com/manoj23/php-fpm
 COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
