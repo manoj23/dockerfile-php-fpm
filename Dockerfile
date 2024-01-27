@@ -4,7 +4,7 @@ ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
 ARG PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP:-}
 RUN apk update && apk --no-cache add --virtual build-dependencies \
 	autoconf automake bison dpkg dpkg-dev file g++ gcc git libtool make \
-	re2c php7-dev \
+	re2c \
 	${PHP_BUILD_DEP} \
 	${PHP_RUNTIME_DEP}
 ARG PHP_GIT_REF=${PHP_GIT_REF:-master}
