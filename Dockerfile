@@ -34,7 +34,7 @@ ARG USR_LIB=${USR_LIB:-}
 ARG BIN=${BIN:-}
 ARG LIB=${LIB:-}
 ARG DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
-RUN (touch /usr/lib/php7/modules/dummy.so)
+RUN (mkdir -p /usr/lib/php7/modules/ && touch /usr/lib/php7/modules/dummy.so)
 RUN (mkdir -p /sysroot/usr/bin/ /sysroot/bin/ /sysroot/usr/lib/ /sysroot/lib/ \
 	&& for bins in $USR_BIN; do cp -v /usr/bin/${bins} /sysroot/usr/bin/; done \
 	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
