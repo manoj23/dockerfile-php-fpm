@@ -10,8 +10,6 @@ RUN apk update && apk --no-cache add --virtual build-dependencies \
 ARG PHP_GIT_REF=${PHP_GIT_REF:-master}
 RUN git clone --depth 1 https://github.com/php/php-src.git -b ${PHP_GIT_REF}
 ARG PHP_CONF=${PHP_CONF:-}
-# FIXME: install gnu-libiconv when available from an Alpine release
-RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/community gnu-libiconv-dev
 ARG PHP_EXT=${PHP_EXT:-}
 RUN (cd /php-src \
 	&& GNU_BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
