@@ -1,4 +1,5 @@
-FROM alpine:3.9 as builder
+ARG ALPINE_VERSION
+FROM alpine:${ALPINE_VERSION} as builder
 ARG PHP_BUILD_DEP=${PHP_BUILD_DEP:-}
 ARG PHP_RUNTIME_DEP=${PHP_RUNTIME_DEP:-}
 RUN apk update && apk --no-cache add --virtual build-dependencies \
