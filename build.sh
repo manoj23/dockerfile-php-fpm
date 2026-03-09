@@ -10,7 +10,7 @@ docker build --no-cache  . \
 --build-arg ALPINE_VERSION=3.21 \
 --build-arg PHP_GIT_REF=${PHP_GIT_REF} \
 --build-arg PHP_CONF="--enable-mbstring --enable-ctype --enable-fileinfo --enable-xml --enable-session --enable-mysqlnd --enable-pdo --with-iconv --with-pdo-mysql=mysqlnd --with-mysqli=mysqlnd --enable-dom --with-libxml --with-curl --with-zlib --with-openssl --enable-intl --enable-xmlreader --enable-calendar" \
---build-arg PHP_BUILD_DEP="libxml2-dev curl-dev zlib-dev openssl-dev oniguruma-dev icu-dev" \
+--build-arg PHP_BUILD_DEP="libxml2-dev curl-dev zlib-dev openssl-dev oniguruma-dev icu-dev icu-data-full" \
 --build-arg PHP_GIT_REF="${PHP_GIT_REF}" \
 --build-arg USR_BIN="env timeout" \
 --build-arg USR_LIB="curl ssl crypto nghttp2 xml2 lzma onig icui18n icuuc icuio icudata stdc++ gcc_s z cares idn2 psl unistring brotlicommon brotlidec zstd" \

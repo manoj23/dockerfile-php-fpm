@@ -43,7 +43,8 @@ RUN (mkdir -p /sysroot/usr/bin/ /sysroot/bin/ /sysroot/usr/lib/ /sysroot/lib/ \
 	&& for bins in $USR_BIN; do cp -v /usr/bin/${bins} /sysroot/usr/bin/; done \
 	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
 	&& for bins in $BIN; do cp -v /bin/${bins} /sysroot/bin/; done \
-	&& for libs in $LIB; do cp -v /lib/*lib${libs}*.so* /sysroot/lib/; done)
+	&& for libs in $LIB; do cp -v /lib/*lib${libs}*.so* /sysroot/lib/; done \
+	&& mkdir -p /sysroot/usr/share/ && cp -r /usr/share/icu /sysroot/usr/share/icu)
 RUN (for php_runtime_dep in $PHP_RUNTIME_DEP; do \
 	for file in $(apk info -L $php_runtime_dep); do \
 		FOLDER=/sysroot/$(dirname $file); mkdir -p $FOLDER; cp $file $FOLDER; \
@@ -74,6 +75,7 @@ LABEL org.opencontainers.image.source https://github.com/manoj23/php-fpm
 COPY --from=builder /usr/lib/php8/modules/*.so /usr/lib/php8/modules/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
+COPY --from=builder /sysroot/usr/share/icu/ /usr/share/icu/
 COPY --from=builder /sysroot/lib/ /lib/
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=builder /lib/libc.musl-x86_64.so.1 /lib/
