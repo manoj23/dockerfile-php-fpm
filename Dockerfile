@@ -14,27 +14,31 @@ ARG PHP_EXT=${PHP_EXT:-}
 RUN (cd /php-src \
 	&& GNU_BUILD="$(dpkg-architecture --query DEB_BUILD_GNU_TYPE)" \
 	&& GNU_HOST="$(dpkg-architecture --query DEB_HOST_GNU_TYPE)" \
-	&& CONFIGURE_ARGS="--build=$GNU_BUILD --host=$GNU_HOST --prefix= --program-suffix=7" \
-	&& for ext in $PHP_EXT; do \
-		(cd /php-src/ext/$ext \
-			&& phpize \
-			&& ./configure $CONFIGURE_ARGS \
-			&& make -j "$(nproc)" \
-			&& make install); \
-	   done \
+	&& CONFIGURE_ARGS="--build=$GNU_BUILD --host=$GNU_HOST --prefix=/ --program-suffix=8" \
 	&& ./buildconf --force && autoreconf \
 	&& ./configure $CONFIGURE_ARGS \
 		--disable-all --disable-cli --disable-cgi --enable-fpm \
 		${PHP_CONF} \
 	&& make fpm -j "$(nproc)" \
 	&& make install-fpm \
-	&& strip --strip-all /sbin/php-fpm7)
-ARG USR_BIN=${USR_BIN:-}
+	&& make install-build \
+	&& make install-programs \
+	&& (for ext in $PHP_EXT; do \
+		(cd /php-src/ext/$ext \
+			&& /bin/phpize8 \
+			&& ./configure $CONFIGURE_ARGS --with-php-config=/bin/php-config8 \
+			&& make -j "$(nproc)" \
+			&& make install); \
+	   done) \
+	&& EXT_DIR="$(/bin/php-config8 --extension-dir)" \
+	&& mkdir -p /usr/lib/php8/modules/ \
+	&& ([ -d "$EXT_DIR" ] && mv -v "$EXT_DIR"/*.so /usr/lib/php8/modules/ || true) \
+	&& strip --strip-all /sbin/php-fpm8)
 ARG USR_LIB=${USR_LIB:-}
 ARG BIN=${BIN:-}
 ARG LIB=${LIB:-}
 ARG DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
-RUN (mkdir -p /usr/lib/php7/modules/ && touch /usr/lib/php7/modules/dummy.so)
+RUN (mkdir -p /usr/lib/php8/modules/ && touch /usr/lib/php8/modules/dummy.so)
 RUN (mkdir -p /sysroot/usr/bin/ /sysroot/bin/ /sysroot/usr/lib/ /sysroot/lib/ \
 	&& for bins in $USR_BIN; do cp -v /usr/bin/${bins} /sysroot/usr/bin/; done \
 	&& for libs in $USR_LIB; do cp -v /usr/lib/*lib${libs}*.so* /sysroot/usr/lib/; done \
@@ -67,19 +71,18 @@ LABEL BIN=${BIN}
 LABEL LIB=${LIB}
 LABEL DOCKERFILE_HASH=${DOCKERFILE_HASH:-}
 LABEL org.opencontainers.image.source https://github.com/manoj23/php-fpm
-COPY --from=builder /usr/lib/php7/modules/*.so /usr/lib/php7/modules/
+COPY --from=builder /usr/lib/php8/modules/*.so /usr/lib/php8/modules/
 COPY --from=builder /sysroot/usr/bin/ /usr/bin/
 COPY --from=builder /sysroot/usr/lib/ /usr/lib/
 COPY --from=builder /sysroot/lib/ /lib/
 COPY --from=builder /lib/ld-musl-x86_64.so.1 /lib/
 COPY --from=builder /lib/libc.musl-x86_64.so.1 /lib/
-COPY --from=builder /sbin/php-fpm7 /sbin/
+COPY --from=builder /sbin/php-fpm8 /sbin/
 COPY --from=builder /etc/shadow /etc/shadow
 COPY --from=builder /etc/group /etc/group
 COPY --from=builder /etc/passwd /etc/passwd
 COPY --from=builder /bin/ /bin/
 RUN mkdir /tmp/ && chmod -R 777 /tmp/ && rm -rf /bin/
 COPY --from=builder /sysroot/bin/ /bin/
-ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so
-ENTRYPOINT [ "/sbin/php-fpm7", "-FO" ]
+ENTRYPOINT [ "/sbin/php-fpm8", "-FO" ]
 
